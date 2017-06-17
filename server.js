@@ -14,11 +14,11 @@ const JwtStrategy = passportJWT.Strategy;
 
 const app         = express();
 
-// mongoose connection
+
 require('dotenv').config();
 const dbuser = process.env.USERNAME;
 const dbpass = process.env.PASSWORD;
-const uri = "mongodb://" + dbuser + ":" + dbpass + "@ds127872.mlab.com:27872/communityapp2017";
+const uri = "mongodb://" + dbuser + ":" + dbpass + "@ds131312.mlab.com:31312/communityapp2017";
 mongoose.Promise = global.Promise;
 const options = {server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
                 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };

@@ -14,10 +14,12 @@ const Users       = require("../database/models/Users")
   });
 
   router.get("/users", (req, res) => {
-    Users.find({first_name:'andrew'})
+    Users.find()
         .then((data) => res.json(data))
         .catch((err) => console.log(err))
   });
+
+
 
 
 module.exports = router
