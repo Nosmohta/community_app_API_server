@@ -12,9 +12,7 @@ const userSchema = mongoose.Schema({
       topic_id: String,
       up_vote: Boolean
     }],
-    communities:[{
-
-    }],
+    communities:[],
     date_created: Date
 
   });

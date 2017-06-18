@@ -20,6 +20,4 @@ const Users       = require("../database/models/Users")
   });
 
 
-
-
 module.exports = router
