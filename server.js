@@ -49,7 +49,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //Mount all resource routes
 app.use("/api", apiRoutes);
 
-
 app.post("/login", (req, res) => {
   if(req.body.email && req.body.password){
     const email = req.body.email.toLowerCase();
