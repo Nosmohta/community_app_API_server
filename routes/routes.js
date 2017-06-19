@@ -6,21 +6,30 @@ const session     = require('express-session');
 const request     = require('request');
 const rpn          = require('request-promise-native');
 
+require('dotenv').config();
+
 //Bring needed models into scope.
 const Users       = require("../database/models/Users");
-
+const Topics      = require("../database/models/Topics");
 
   router.get("/", (req, res) => {
     let data = {}
     res.json(data);
   });
 
+  router.get("/topics", (req, res) => {
+    Topics.find()
+        .then((data) => res.json(data))
+        .catch((err) => console.log(err))
+  });
+
+
+
   router.get("/users", (req, res) => {
     Users.find()
         .then((data) => res.json(data))
         .catch((err) => console.log(err))
   });
-
 
   router.post("/topics/new", (req, res) => {
       // autenticate user
@@ -30,19 +39,18 @@ const Users       = require("../database/models/Users");
       console.log(content)
       const nlpOptions = {
         method: 'POST',
-        uri: 'https://language.googleapis.com//v1/documents:annotateText',
-        payload:{
+        uri: 'https://language.googleapis.com/v1/documents:analyzeEntities?fields=entities&key=' + process.env.GOOGLE_API_KEY,
+        body:{
           document: {
             type: 'PLAIN_TEXT',
-            language: "EN",
+            language: 'EN',
             content: content
           },
           encodingType: 'UTF8'
         },
-        qs: {
-          access_token: process.env.GOOGLE_API_KEY   // -> uri + '?access_token=xxxxx%20xxxxx'
-        }
+        json: true
       }
+       console.log(nlpOptions)
 
       // make api post to google NLP API
       rpn(nlpOptions)
