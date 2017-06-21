@@ -42,6 +42,12 @@ const strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
 passport.use(strategy);
 app.use(passport.initialize());
 
+app.use( (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // Seperated Routes for each Resource
 const apiRoutes    = require("./routes/routes");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -50,6 +56,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api", apiRoutes);
 
 app.post("/login", (req, res) => {
+
+  console.log(req.body)
+
   if(req.body.email && req.body.password){
     const email = req.body.email.toLowerCase();
     const password = req.body.password;
@@ -57,8 +66,7 @@ app.post("/login", (req, res) => {
     .then( (user) => {
       if( !user) {
         res.status(401).json({message:"No such user found."});
-      }
-      if( user && ( user.password === req.body.password)) {
+      } else if( user && ( user.password === password)) {
         const payload = {id: user.id};
         const token = jwt.sign(payload, jwtOptions.secretOrKey);
         res.json({message: "Password OK.", token: token});
@@ -67,7 +75,8 @@ app.post("/login", (req, res) => {
       }
     })
     .catch( err => console.log(err))
-  } else {
+  }
+  if (!req.body.email || !req.body.password) {
     res.status(401).json({message:"Password or username not provided."});
   }
 });
