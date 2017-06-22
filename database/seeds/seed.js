@@ -49,28 +49,32 @@ db.once('open', () => {
     subject: 'pothole',
     description: 'This pothole is in my way!',
     up_votes: 87,
-    down_votes: 15
+    down_votes: 15,
+    date_created: Date.now() - (86400000*24)
   });
 
   const topic_2 = new Topic({
     subject: 'curb',
     description: "I can't move over this curb in my wheelchair",
     up_votes: 128,
-    down_votes: 3
+    down_votes: 3,
+    date_created: Date.now()- (86400000*14)
   });
 
   const topic_3 = new Topic({
     subject: 'fallen tree',
     description: 'A tree has fallen down on my street.',
     up_votes: 5,
-    down_votes: 64
+    down_votes: 64,
+    date_created: Date.now()- (86400000*2)
   });
 
   const topic_4 = new Topic({
     subject: 'streetscape',
     description: 'I really like this street design!',
     up_votes: 1,
-    down_votes: 0
+    down_votes: 0,
+    date_created: Date.now()- (86400000*30)
   });
 
   const topicList = [topic_1, topic_2, topic_3, topic_4]

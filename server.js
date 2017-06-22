@@ -7,16 +7,17 @@ const mongoose   = require("mongoose");
 const jwt = require('jsonwebtoken');
 const passport = require("passport");
 const passportJWT = require("passport-jwt");
+
 const Users       = require("./database/models/Users")
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
 const bcrypt = require("bcrypt");
-
-const app         = express();
-
-
 require('dotenv').config();
+
+const app = express();
+
+//MongoDB connection and configuration
 const dbuser = process.env.USERNAME;
 const dbpass = process.env.PASSWORD;
 const uri = "mongodb://" + dbuser + ":" + dbpass + "@ds131312.mlab.com:31312/communityapp2017";
@@ -27,13 +28,16 @@ mongoose.connect(uri, options);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
 //Passport and JSON Web Token middleware
 const jwtOptions = {}
-  jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
-  jwtOptions.secretOrKey = 'CommunitySecreteKey1234';
+  jwtOptions.jwtFromRequest = ExtractJwt.fromBodyField('token');
+  jwtOptions.secretOrKey = process.env.APP_SECRET_KEY;
 const strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
   console.log('payload received', jwt_payload);
-  const user = Users.find({password: jwt_payload.id});
+  const user = Users.findOne({'id': jwt_payload.id});
   if (user) {
     next(null, user);
   } else {
@@ -43,18 +47,16 @@ const strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
 passport.use(strategy);
 app.use(passport.initialize());
 
+//Allow for CORS in Development
 app.use( (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
-// Seperated Routes for each Resource
-const apiRoutes    = require("./routes/routes");
-app.use(bodyParser.urlencoded({ extended: true }));
-
 //Mount all resource routes
-app.use("/api", apiRoutes);
+const apiRoutes    = require("./routes/routes");
+app.use("/api", passport.authenticate('jwt', { session: false }),  apiRoutes);
 
 
 //USER LOGIN ROUTE

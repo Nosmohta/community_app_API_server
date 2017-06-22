@@ -8,7 +8,8 @@ const topicSchema = mongoose.Schema({
     description: String,
     description_NPL: String,
     up_votes: Number,
-    down_votes: Number
+    down_votes: Number,
+    date_created: Date
 
   });
 
