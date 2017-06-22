@@ -11,6 +11,7 @@ const Users       = require("./database/models/Users")
 
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
+const bcrypt = require("bcrypt");
 
 const app         = express();
 
@@ -55,9 +56,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //Mount all resource routes
 app.use("/api", apiRoutes);
 
-app.post("/login", (req, res) => {
 
-  console.log(req.body)
+//USER LOGIN ROUTE
+app.post("/login", (req, res) => {
 
   if(req.body.email && req.body.password){
     const email = req.body.email.toLowerCase();
@@ -66,11 +67,13 @@ app.post("/login", (req, res) => {
     .then( (user) => {
       if( !user) {
         res.status(401).json({message:"No such user found."});
-      } else if( user && ( user.password === password)) {
+      } else if( user && (bcrypt.compareSync(  password, user.password))) {
         const payload = {id: user.id};
         const token = jwt.sign(payload, jwtOptions.secretOrKey);
         res.json({message: "Password OK.", token: token});
       } else {
+        console.log(user.password);
+        console.log(password);
         res.status(401).json({message:"Passwords did not match."});
       }
     })
@@ -80,6 +83,39 @@ app.post("/login", (req, res) => {
     res.status(401).json({message:"Password or username not provided."});
   }
 });
+
+// REGISTER ROUTE
+app.post("/register", (req, res) => {
+  let hashPassword = bcrypt.hashSync(req.body.password, 10);
+  const user = {
+    first_name: req.body.firstname,
+    last_name: req.body.lastname,
+    email: req.body.email,
+    password: hashPassword
+  };
+  if( user.first_name && user.last_name && user.email && hashPassword){
+    Users.create(user)
+      .then((response) => {
+        const payload = {id: response.id};
+        const token = jwt.sign(payload, jwtOptions.secretOrKey);
+        res.json({
+          message: "Register Success from server",
+          token: token
+        })
+      })
+      .catch(err => {
+        console.log(err.errors.email.kind);
+        if(err.errors.email.kind === 'unique') {
+          res.status(401).json({message: "That email is already used."})
+        } else {
+          res.status(401).json({message: "Registration has failed at the server."})
+        }
+      })
+  } else {
+    res.status(401).json({message: "Please complete all registration fields"})
+  }
+});
+
 
 
 app.listen(PORT, () => {

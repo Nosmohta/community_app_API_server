@@ -7,10 +7,9 @@ const topicSchema = mongoose.Schema({
     picture_VML: String,
     description: String,
     description_NPL: String,
-    votes: [{
-      vote_date: Date,
-      vote_up: Boolean
-    }]
+    up_votes: Number,
+    down_votes: Number
+
   });
 
 module.exports = topicSchema;

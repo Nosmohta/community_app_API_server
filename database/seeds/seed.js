@@ -6,6 +6,7 @@ require('dotenv').config();
 const communitySchema = require('../Schema/communitySchema')
 const userSchema = require('../Schema/userSchema')
 const topicSchema = require('../Schema/topicSchema')
+const bcrypt = require("bcrypt");
 
 
 // connect to mlab database
@@ -41,6 +42,39 @@ db.once('open', () => {
   const communityList = [ calgary, westhillhurst, u_of_c]
     Community.insertMany(communityList);
 
+// Topic SEEDS:
+  const Topic = mongoose.model('topic', topicSchema);
+
+  const topic_1 = new Topic({
+    subject: 'pothole',
+    description: 'This pothole is in my way!',
+    up_votes: 87,
+    down_votes: 15
+  });
+
+  const topic_2 = new Topic({
+    subject: 'curb',
+    description: "I can't move over this curb in my wheelchair",
+    up_votes: 128,
+    down_votes: 3
+  });
+
+  const topic_3 = new Topic({
+    subject: 'fallen tree',
+    description: 'A tree has fallen down on my street.',
+    up_votes: 5,
+    down_votes: 64
+  });
+
+  const topic_4 = new Topic({
+    subject: 'streetscape',
+    description: 'I really like this street design!',
+    up_votes: 1,
+    down_votes: 0
+  });
+
+  const topicList = [topic_1, topic_2, topic_3, topic_4]
+  Topic.insertMany(topicList);
 
 // USER SEEDS:
   const User = mongoose.model('users', userSchema);
@@ -49,44 +83,38 @@ db.once('open', () => {
     first_name: "rich",
     last_name: "forester",
     email: "rich@email.com",
-    password: "1234"
+    password: bcrypt.hashSync('1234', 10),
+    vote_history:[ {
+      vote_date: Date.now(),
+      topic_id: topic_4.id,
+      up_vote: true
+    },{
+      vote_date: Date.now(),
+      topic_id: topic_1.id,
+      up_vote: false
+    }]
   });
 
   const user_2 = new User({
     first_name: "andrew",
     last_name: "thomson",
     email: "andrew@email.com",
-    password: "1234"
+    password: bcrypt.hashSync('1234', 10),
+    vote_history:[ {
+      vote_date: Date.now(),
+      topic_id: topic_1.id,
+      up_vote: true
+    },{
+      vote_date: Date.now(),
+      topic_id: topic_2.id,
+      up_vote: false
+    }]
   });
 
   const userList = [user_1, user_2]
     User.insertMany(userList);
 
-  // Topic SEEDS:
-  const Topic = mongoose.model('topic', topicSchema);
 
-  const topic_1 = new Topic({
-    subject: 'pothole',
-    description: 'This pothole is in my way!',
-  });
-
-  const topic_2 = new Topic({
-    subject: 'curb',
-    description: "I can't move over this curb in my wheelchair",
-  });
-
-  const topic_3 = new Topic({
-    subject: 'fallen tree',
-    description: 'A tree has fallen down on my street.'
-  });
-
-  const topic_4 = new Topic({
-    subject: 'streetscape',
-    description: 'I really like this street design!'
-  });
-
-  const topicList = [topic_1, topic_2, topic_3, topic_4]
-    Topic.insertMany(topicList);
 
 
 });

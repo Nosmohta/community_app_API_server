@@ -23,6 +23,21 @@ const Topics      = require("../database/models/Topics");
         .catch((err) => console.log(err))
   });
 
+  router.post( "/vote", (req, res) => {
+    console.log(req.body.token);
+    console.log(req.body.vote_up);
+    console.log(req.body.vote_down);
+    console.log(req.body.topic_id);
+    //autenticate user
+    //update user voting history
+    //update topic vote record
+    //send sucess resonse with whole topicobject?
+    Topics.findOne('email': email })
+    let data = { test: 'test'}
+    res.json(data)
+
+  });
+
 
 
   router.get("/users", (req, res) => {
