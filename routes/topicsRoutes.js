@@ -12,19 +12,12 @@ require('dotenv').config();
 //Bring needed models into scope.
 const Users       = require("../database/models/Users");
 const Topics      = require("../database/models/Topics");
-const db          = require("../utilities/DB_helpers.js")
+const db_util          = require("../utilities/DB_helpers.js");
 
-
-//root API route
-router.get("/", (req, res) => {
-  let data = {'no_data': no_data};
-  res.json(data);
-});
 
 
 // LOAD USER Relevant TOPICS on REQUEST
-router.post("/topics", (req, res) => {
-
+router.post("/", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
   console.log('user id: ', user_id);
   let userVoteHistory = {}
@@ -39,8 +32,8 @@ router.post("/topics", (req, res) => {
               const userData = {
                 'user_data': {
                   'vote_pending': false,
-                  'vote_up': db.userHistoryOnTopic(userVoteHistory, topic.id, true),
-                  'vote_down': db.userHistoryOnTopic(userVoteHistory, topic.id, false)
+                  'vote_up': db_util.userHistoryOnTopic(userVoteHistory, topic.id, true),
+                  'vote_down': db_util.userHistoryOnTopic(userVoteHistory, topic.id, false)
                 }
               }
               data.push(Object.assign({}, topic.toJSON(), userData));
@@ -63,7 +56,7 @@ router.post("/topics", (req, res) => {
 
 
 // POST VOTE ROUTE : saves a vote to the database
-router.post( "/vote", (req, res) => {
+router.post( "/:topic_id/vote", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
   console.log('user id: ', user_id);
   if(user_id) {
@@ -93,39 +86,6 @@ router.post( "/vote", (req, res) => {
 });
 
 
-//POST NEW CONVERSATION
-router.post("/topics/new", (req, res) => {
-    // Create request object with "topic description"
-    const content = req.body.topicDescription.toString();
-    console.log(content);
-    const nlpOptions = {
-      method: 'POST',
-      uri: 'https://language.googleapis.com/v1/documents:analyzeEntities?fields=entities&key=' + process.env.GOOGLE_API_KEY,
-      body:{
-        document: {
-          type: 'PLAIN_TEXT',
-          language: 'EN',
-          content: content
-        },
-        encodingType: 'UTF8'
-      },
-      json: true
-    };
-     console.log(nlpOptions);
-
-    // make api post to google NLP API
-    rpn(nlpOptions)
-      .then( (data) => console.log("data from NLP", data))
-      .catch( (err) => console.log(err));
-
-    // create new topic for user
-
-    // save data to topic in DB
-    // respond with object All?
-    const data = {};
-
-    res.json(data)
-});
 
 
 module.exports = router;

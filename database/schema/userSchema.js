@@ -2,7 +2,6 @@
 const mongoose   = require("mongoose");
 const uniqueValidator = require('mongoose-unique-validator');
 
-
 const userSchema = mongoose.Schema({
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
@@ -14,7 +13,17 @@ const userSchema = mongoose.Schema({
       up_vote: Boolean
     }],
     communities:[],
-    date_created: Date
+    date_created: Date,
+    conversation_history: {
+      conversation_id:{
+        start_date: Date,
+        update_date: Date,
+        topic_id: String,
+        photo: String,
+        description: String,
+        subject: String,
+      }
+    }
 
  });
 

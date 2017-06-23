@@ -52,10 +52,13 @@ app.use( (req, res, next) => {
 });
 
 //Mount all resource routes
-const apiRoutes    = require("./routes/apiRoutes");
-const userRoutes   = require("./routes/userRoutes");
-app.use("/api", passport.authenticate('jwt', { session: false }),  apiRoutes);
-app.use("/", userRoutes);
+const conversationsRoutes    = require("./routes/conversationsRoutes");
+const topicsRoutes           = require("./routes/topicsRoutes");
+const publicRoutes             = require("./routes/userRoutes");
+app.use("/api/conversations", passport.authenticate('jwt', { session: false }),  conversationsRoutes);
+app.use("/api/topics", passport.authenticate('jwt', { session: false }),  topicsRoutes);
+app.use("/", publicRoutes);
+
 
 app.listen(PORT, () => {
   console.log("Example app listening on port: " + PORT);

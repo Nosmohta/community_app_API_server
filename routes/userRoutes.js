@@ -15,6 +15,17 @@ const jwt         = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 require('dotenv').config();
 
+router.get("/photos/:topic_id", (req, res) => {
+  // don't trust req.params
+  // read topic_5.jpg from uploads file
+  let img_name = req.params.topic_id;
+  let photo = __dirname + '/../uploads/' + img_name + '.jpg';
+  res.download(photo);
+})
+
+
+
+
 //USER LOGIN ROUTE
 router.post("/login", (req, res) => {
   if(req.body.email && req.body.password){
