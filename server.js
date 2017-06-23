@@ -36,7 +36,6 @@ const jwtOptions = {}
   jwtOptions.jwtFromRequest = ExtractJwt.fromBodyField('token');
   jwtOptions.secretOrKey = process.env.APP_SECRET_KEY;
 const strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
-  console.log('payload received', jwt_payload);
   const user = Users.findOne({'id': jwt_payload.id});
   if (user) {
     next(null, user);
