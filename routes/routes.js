@@ -37,22 +37,31 @@ const db          = require("../utilities/DB_helpers.js")
     console.log('user id: ', user_id);
     let userVoteHistory = {}
     Users.findOne({'_id': user_id})
-      .then( (user) => { userVoteHistory = user.vote_history
-        Topics.find()
-          .then((topics) => {
-            let data = [];
-            topics.forEach((topic) => {
-              const userData = {
-                'user_data':{
-                  'vote_pending': false,
-                  'vote_up': db.userHistoryOnTopic( userVoteHistory, topic.id, true ),
-                  'vote_down': db.userHistoryOnTopic( userVoteHistory, topic.id, false)
+      .then( (user) => {
+        if(user) {
+          userVoteHistory = user.hasOwnProperty('vote_history') ? user.vote_history : []
+          Topics.find()
+            .then((topics) => {
+              let data = [];
+              topics.forEach((topic) => {
+                const userData = {
+                  'user_data': {
+                    'vote_pending': false,
+                    'vote_up': db.userHistoryOnTopic(userVoteHistory, topic.id, true),
+                    'vote_down': db.userHistoryOnTopic(userVoteHistory, topic.id, false)
                   }
                 }
-              data.push(Object.assign({}, topic.toJSON(), userData));
+                data.push(Object.assign({}, topic.toJSON(), userData));
+              })
+              res.json({topics: data});
             })
-            res.json({topics: data});
-          })
+            .catch((err) => {
+              console.log(err);
+              res.status(401).json({message: "Topics have failed to load."})
+            })
+        } else {
+          res.status(401).json({message: "Not a valid user. Please try logging in."})
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -61,7 +70,7 @@ const db          = require("../utilities/DB_helpers.js")
   });
 
 
-
+  // POST VOTE ROUTE
   router.post( "/vote", (req, res) => {
     let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
     console.log('user id: ', user_id);
@@ -92,19 +101,19 @@ const db          = require("../utilities/DB_helpers.js")
   });
 
 
-
+  // GET ALL USER
   router.get("/users", (req, res) => {
     Users.find()
         .then((data) => res.json(data))
         .catch((err) => console.log(err))
   });
 
-  router.post("/topics/new", (req, res) => {
-      // autenticate user
-      // Create request object with "topic description"
 
-      const content = req.body.topicDescription.toString()
-      console.log(content)
+  //POST NEW CONVERSATION
+  router.post("/topics/new", (req, res) => {
+      // Create request object with "topic description"
+      const content = req.body.topicDescription.toString();
+      console.log(content);
       const nlpOptions = {
         method: 'POST',
         uri: 'https://language.googleapis.com/v1/documents:analyzeEntities?fields=entities&key=' + process.env.GOOGLE_API_KEY,
@@ -117,8 +126,8 @@ const db          = require("../utilities/DB_helpers.js")
           encodingType: 'UTF8'
         },
         json: true
-      }
-       console.log(nlpOptions)
+      };
+       console.log(nlpOptions);
 
       // make api post to google NLP API
       rpn(nlpOptions)
@@ -128,7 +137,6 @@ const db          = require("../utilities/DB_helpers.js")
       // create new topic for user
       // save data to topic in DB
       // respond with opject All?
-
       const data = {};
 
       res.json(data)

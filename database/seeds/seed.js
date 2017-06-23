@@ -1,6 +1,9 @@
 // run this file to seed the database with sample data: empty database first.
 const mongoose = require("mongoose");
 require('dotenv').config();
+const fs = require('fs')
+
+
 
 //Import Schemas
 const communitySchema = require('../Schema/communitySchema')
@@ -47,6 +50,11 @@ db.once('open', () => {
 
   const topic_1 = new Topic({
     subject: 'pothole',
+    img:{
+      //large: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_1.jpg'),
+      //small: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_1_sml.jpg'),
+      contentType: 'image/jpg'
+    },
     description: 'This pothole is in my way!',
     up_votes: 87,
     down_votes: 15,
@@ -55,6 +63,11 @@ db.once('open', () => {
 
   const topic_2 = new Topic({
     subject: 'curb',
+    img:{
+      //large: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_2.jpg'),
+      //small: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_2_sml.jpg'),
+      contentType: 'image/jpg'
+    },
     description: "I can't move over this curb in my wheelchair",
     up_votes: 128,
     down_votes: 3,
@@ -63,6 +76,11 @@ db.once('open', () => {
 
   const topic_3 = new Topic({
     subject: 'fallen tree',
+    img:{
+      //large: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_3.jpg'),
+      //small: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_3_sml.jpg'),
+      contentType: 'image/jpg'
+    },
     description: 'A tree has fallen down on my street.',
     up_votes: 5,
     down_votes: 64,
@@ -71,6 +89,11 @@ db.once('open', () => {
 
   const topic_4 = new Topic({
     subject: 'streetscape',
+    img:{
+      //large: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_4.jpg'),
+      //small: fs.readFileSync('/Users/andrewthomson/lighthouse/final_project/community_api/database/seeds/seedData/topic_4_sml.jpg'),
+      contentType: 'image/jpg'
+    },
     description: 'I really like this street design!',
     up_votes: 1,
     down_votes: 0,
