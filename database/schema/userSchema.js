@@ -14,16 +14,16 @@ const userSchema = mongoose.Schema({
     }],
     communities:[],
     date_created: Date,
-    conversation_history: {
-      conversation_id:{
-        start_date: Date,
-        update_date: Date,
-        topic_id: String,
-        photo: String,
-        description: String,
-        subject: String,
-      }
-    }
+    conversation_history: [{
+      conversation_id: String,
+      start_date: Date,
+      update_date: Date,
+      canceled: Boolean,
+      topic_id: String,
+      photo: String,
+      description: String,
+      subject: String,
+    }]
 
  });
 

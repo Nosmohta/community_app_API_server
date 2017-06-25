@@ -7,6 +7,8 @@ const mongoose    = require("mongoose");
 const jwt         = require('jsonwebtoken');
 const passport    = require("passport");
 const passportJWT = require("passport-jwt");
+const multer      = require('multer');
+const upload      = multer();
 
 const ExtractJwt  = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
@@ -26,7 +28,15 @@ mongoose.connect(uri, options);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 
+//Allow for CORS in Development
+app.use( (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
+
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 //Passport and JSON Web Token middleware
 const jwtOptions = {
@@ -44,19 +54,15 @@ const strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
 passport.use(strategy);
 app.use(passport.initialize());
 
-//Allow for CORS in Development
-app.use( (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
 
 //Mount all resource routes
 const conversationsRoutes    = require("./routes/conversationsRoutes");
 const topicsRoutes           = require("./routes/topicsRoutes");
-const publicRoutes             = require("./routes/userRoutes");
+const uploadRoutes           = require("./routes/uploadRoute");
+const publicRoutes           = require("./routes/userRoutes");
 app.use("/api/conversations", passport.authenticate('jwt', { session: false }),  conversationsRoutes);
 app.use("/api/topics", passport.authenticate('jwt', { session: false }),  topicsRoutes);
+app.use("/upload", uploadRoutes);
 app.use("/", publicRoutes);
 
 

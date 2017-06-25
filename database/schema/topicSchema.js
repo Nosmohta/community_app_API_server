@@ -11,7 +11,6 @@ const topicSchema = mongoose.Schema({
     up_votes: Number,
     down_votes: Number,
     date_created: Date
-
   });
 
 module.exports = topicSchema;

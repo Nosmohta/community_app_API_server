@@ -21,17 +21,7 @@ router.post("/", (req, res) => {
   res.json(data);
 });
 
-
-//POST conversation photo
-router.post("/:conversation_id/photo", (req, res) => {
-  let conv_id = req.params.conversation_id;
-
-
-
-  let test = {};
-  res.json(test);
-});
-
+//POST conversation photo handled in uploadRoutes (this is to allow for alternate security system while using Form/Data)
 
 //POST conversation DESCRIPTION
 router.post("/:conversation_id/description", (req, res) => {

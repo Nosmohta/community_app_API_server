@@ -18,6 +18,8 @@ const db_util          = require("../utilities/DB_helpers.js");
 
 // LOAD USER Relevant TOPICS on REQUEST
 router.post("/", (req, res) => {
+
+  console.log("made it to topics!")
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
   console.log('user id: ', user_id);
   let userVoteHistory = {}
@@ -85,7 +87,30 @@ router.post( "/:topic_id/vote", (req, res) => {
   }
 });
 
+// POST Cancle VOTE ROUTE : renders last user vote invalid and down increments the topics total.
+router.post( "/:topic_id/cancel", (req, res) => {
+  let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
+  let topic_id = req.body.topic_id;
+  console.log(user_id);
+  Users.findOne({'_id': user_id })
+    .then( (user) => {
 
+      //console.log(user.vote_history);
+      //finde user and update history....how?
+      let vote_history = user.vote_history.reduce( (acc, i, vote) => (vote.topic_id === topic_id)? i : false)
+      console.log(vote_history);
+
+      res.json({
+        message: 'success',
+        test: "test"
+      })
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(401).json({message:'A failure occured while trying to CANCEL your vote in database.'})
+    });
+
+});
 
 
 module.exports = router;
