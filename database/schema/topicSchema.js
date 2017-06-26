@@ -9,8 +9,12 @@ const topicSchema = mongoose.Schema({
     description: String,
     description_NPL: String,
     up_votes: Number,
-    down_votes: Number,
-    date_created: Date
+    down_votes: Number
+  },
+  {
+    timestamps: {
+      createdAt: 'created_at'
+    }
   });
 
 module.exports = topicSchema;

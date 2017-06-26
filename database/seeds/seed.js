@@ -6,9 +6,11 @@ const fs = require('fs')
 
 
 //Import Schemas
-const communitySchema = require('../Schema/communitySchema')
-const userSchema = require('../Schema/userSchema')
-const topicSchema = require('../Schema/topicSchema')
+const communitySchema = require('../Schema/communitySchema');
+const userSchema = require('../Schema/userSchema');
+const topicSchema = require('../Schema/topicSchema');
+const voteSchema = require('../Schema/voteSchema');
+const conversationSchema = require('../Schema/conversationSchema');
 const bcrypt = require("bcrypt");
 
 
@@ -50,38 +52,34 @@ db.once('open', () => {
 
   const topic_1 = new Topic({
     subject: 'pothole',
-    img_path: 'http://localhost:8080/photos/topic_1.jpg',
+    img_path: 'http://localhost:8080/upload/photos/topic_1.jpg',
     description: 'This pothole is in my way!',
     up_votes: 87,
-    down_votes: 15,
-    date_created: Date.now() - (86400000*24)
+    down_votes: 15
   });
 
   const topic_2 = new Topic({
     subject: 'curb',
-    img_path: 'http://localhost:8080/photos/topic_2.jpg',
+    img_path: 'http://localhost:8080/upload/photos/topic_2.jpg',
     description: "I can't move over this curb in my wheelchair",
     up_votes: 128,
-    down_votes: 3,
-    date_created: Date.now()- (86400000*14)
+    down_votes: 3
   });
 
   const topic_3 = new Topic({
     subject: 'fallen tree',
-    img_path: 'http://localhost:8080/photos/topic_3.jpg',
+    img_path: 'http://localhost:8080/upload/photos/topic_3.jpg',
     description: 'A tree has fallen down on my street.',
     up_votes: 5,
-    down_votes: 64,
-    date_created: Date.now()- (86400000*2)
+    down_votes: 64
   });
 
   const topic_4 = new Topic({
     subject: 'streetscape',
-    img_path: 'http://localhost:8080/photos/topic_4.jpg',
+    img_path: 'http://localhost:8080/upload/photos/topic_4.jpg',
     description: 'I really like this street design!',
     up_votes: 1,
-    down_votes: 0,
-    date_created: Date.now()- (86400000*30)
+    down_votes: 0
   });
 
   const topicList = [topic_1, topic_2, topic_3, topic_4]
@@ -94,39 +92,21 @@ db.once('open', () => {
     first_name: "rich",
     last_name: "forester",
     email: "rich@email.com",
-    password: bcrypt.hashSync('1234', 10),
-    vote_history:[ {
-      vote_date: Date.now(),
-      topic_id: topic_4.id,
-      up_vote: true
-    },{
-      vote_date: Date.now(),
-      topic_id: topic_1.id,
-      up_vote: false
-    }]
+    password: bcrypt.hashSync('1234', 10)
   });
 
   const user_2 = new User({
     first_name: "andrew",
     last_name: "thomson",
     email: "andrew@email.com",
-    password: bcrypt.hashSync('1234', 10),
-    vote_history:[ {
-      vote_date: Date.now(),
-      topic_id: topic_1.id,
-      up_vote: true
-    },{
-      vote_date: Date.now(),
-      topic_id: topic_2.id,
-      up_vote: false
-    }]
+    password: bcrypt.hashSync('1234', 10)
   });
 
-  const userList = [user_1, user_2]
+  const userList = [user_1, user_2];
     User.insertMany(userList);
 
 
 
-
 });
+
 
