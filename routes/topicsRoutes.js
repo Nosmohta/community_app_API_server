@@ -17,7 +17,6 @@ const Votes       = require("../database/models/Votes");
 const db_util          = require("../utilities/DB_helpers.js");
 
 
-
 // LOAD USER Relevant TOPICS on REQUEST
 router.post("/", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
