@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9dc03d78-5a19-4304-affd-1acee262c816" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/schema/conversationSchema.js" afterPath="$PROJECT_DIR$/database/schema/conversationSchema.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/seeds/seed.js" afterPath="$PROJECT_DIR$/database/seeds/seed.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/topicsRoutes.js" afterPath="$PROJECT_DIR$/routes/topicsRoutes.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/uploadRoute.js" afterPath="$PROJECT_DIR$/routes/uploadRoute.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/userRoutes.js" afterPath="$PROJECT_DIR$/routes/userRoutes.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server.js" afterPath="$PROJECT_DIR$/server.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utilities/DB_helpers.js" afterPath="$PROJECT_DIR$/utilities/DB_helpers.js" />
-    </list>
+    <list default="true" id="9dc03d78-5a19-4304-affd-1acee262c816" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -406,12 +397,12 @@
       <option name="presentableId" value="Default" />
       <updated>1497982520145</updated>
       <workItem from="1497982522592" duration="131187000" />
-      <workItem from="1498495521082" duration="12325000" />
+      <workItem from="1498495521082" duration="12394000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="143512000" />
+    <option name="totallyTimeSpent" value="143581000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="19" y="23" width="1356" height="872" extended-state="0" />
