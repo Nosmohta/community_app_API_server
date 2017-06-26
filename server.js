@@ -62,7 +62,7 @@ const uploadRoutes           = require("./routes/uploadRoute");
 const publicRoutes           = require("./routes/userRoutes");
 app.use("/api/conversations", passport.authenticate('jwt', { session: false }),  conversationsRoutes);
 app.use("/api/topics", passport.authenticate('jwt', { session: false }),  topicsRoutes);
-app.use("/upload", uploadRoutes);
+app.use("/upload",passport.authenticate('jwt', { session: false }), uploadRoutes);
 app.use("/", publicRoutes);
 
 

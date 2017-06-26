@@ -1,9 +1,11 @@
+"use strict";
 
-
+const Users             = require("../database/models/Users");
+const Topics            = require("../database/models/Topics");
+const Conversations     = require("../database/models/Conversations");
 
 // if the user has voted(up/down) on this topic return count
 function userHistoryOnTopic( userVoteHistory, topicID, upVote){
-
   const hasHistory = (vote) => {
     return ((vote.topic_id == topicID) && (vote.up_vote === upVote ))
   }
@@ -11,14 +13,29 @@ function userHistoryOnTopic( userVoteHistory, topicID, upVote){
 }
 
 
+function convInitOrFind(conv_id, user_id) {
+  if (!conv_id){
+    return Conversations.create( {user_id: user_id})
+      .then( ( conversation) => {
+        return conversation
+    })
+  } else {
+    return Conversations.findOne({'_id': conv_id})
+      .then( (conversation) => {
+        return conversation
+    })
+  }
+
+
+}
+
+
 
 
 function addToConversation(user_id, newConvProps) {
-
   console.log(req.file.filename )
   console.log('conversation id: ', req.params.conversation_id);
   console.log("conversation history: ", user.conversation_history[0]);
-
   const conversation_init =  {
     id: conv_id,
     start_date: Date.now(),
@@ -46,5 +63,6 @@ function addToConversation(user_id, newConvProps) {
 
 module.exports = {
   'userHistoryOnTopic': userHistoryOnTopic,
-  'addToConversation': addToConversation
+  'addToConversation': addToConversation,
+  'convInitOrFind': convInitOrFind
 }

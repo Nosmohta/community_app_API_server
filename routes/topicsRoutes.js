@@ -59,7 +59,9 @@ router.post("/", (req, res) => {
 // POST VOTE ROUTE : saves a vote to the database
 router.post( "/:topic_id/vote", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
-  let vote_up = req.body.vote_up? true : false
+  let vote_up = req.body.vote_up == 'true'
+  console.log( typeof vote_up, vote_up)
+
   if(user_id) {
     Users.findOne({'_id': user_id})
       .then( (user) => {
@@ -73,14 +75,23 @@ router.post( "/:topic_id/vote", (req, res) => {
             })
             newVote.save()
               .then( () => {
-                user.vote_history.push(newVote)
+                user.vote_history.push(newVote);
                 user.save()
                   .then( () => {
-                    res.json({
-                      vote_up: vote_up,
-                      vote_down: !vote_up,
-                      vote_pending: false
-                    })
+                    let topic_up_votes = topic.up_votes;
+                    let topic_down_votes = topic.down_votes;
+                    vote_up?
+                      topic.set('up_votes', topic_up_votes + 1):
+                      topic.set('down_votes', topic_down_votes + 1 )
+
+                    topic.save()
+                      .then(
+                        res.json({
+                          vote_up: vote_up,
+                          vote_down: !vote_up,
+                          vote_pending: false
+                        })
+                      )
 
                   })
 

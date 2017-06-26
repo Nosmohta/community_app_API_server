@@ -2,13 +2,25 @@
 
 const mongoose   = require("mongoose");
 
-const voteSchema = mongoose.Schema({
+const conversationSchema = mongoose.Schema({
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     topic_id: { type: mongoose.Schema.Types.ObjectId, ref: 'topic' },
     photo: String,
+    photo_safe: Boolean,
+    vision_data:{
+      labelAnnotations: String,
+      faceAnnotations: String,
+      safeSearchAnnotation: String,
+      webDetection: String,
+      fullTextAnnotation: String,
+    },
     description: String,
+    nlp_data:{
+      labelAnnotations: String
+    },
     subject: String,
-    subject_guess: [String]
+    subject_guess_photo: String,
+    subject_guess_nlp: String
   },
   {
     timestamps: {
@@ -18,7 +30,7 @@ const voteSchema = mongoose.Schema({
 
 );
 
-module.exports = voteSchema;
+module.exports = conversationSchema;
 
 
 {

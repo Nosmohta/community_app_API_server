@@ -52,7 +52,7 @@ db.once('open', () => {
 
   const topic_1 = new Topic({
     subject: 'pothole',
-    img_path: 'http://localhost:8080/upload/photos/topic_1.jpg',
+    img_path: 'http://localhost:8080/photos/topic_1.jpg',
     description: 'This pothole is in my way!',
     up_votes: 87,
     down_votes: 15
@@ -60,7 +60,7 @@ db.once('open', () => {
 
   const topic_2 = new Topic({
     subject: 'curb',
-    img_path: 'http://localhost:8080/upload/photos/topic_2.jpg',
+    img_path: 'http://localhost:8080/photos/topic_2.jpg',
     description: "I can't move over this curb in my wheelchair",
     up_votes: 128,
     down_votes: 3
@@ -68,7 +68,7 @@ db.once('open', () => {
 
   const topic_3 = new Topic({
     subject: 'fallen tree',
-    img_path: 'http://localhost:8080/upload/photos/topic_3.jpg',
+    img_path: 'http://localhost:8080/photos/topic_3.jpg',
     description: 'A tree has fallen down on my street.',
     up_votes: 5,
     down_votes: 64
@@ -76,7 +76,7 @@ db.once('open', () => {
 
   const topic_4 = new Topic({
     subject: 'streetscape',
-    img_path: 'http://localhost:8080/upload/photos/topic_4.jpg',
+    img_path: 'http://localhost:8080/photos/topic_4.jpg',
     description: 'I really like this street design!',
     up_votes: 1,
     down_votes: 0
