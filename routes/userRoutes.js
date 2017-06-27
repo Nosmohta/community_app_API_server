@@ -7,8 +7,7 @@ const request     = require('request');
 
 //Bring needed models into scope.
 const Users       = require("../database/models/Users");
-const Topics      = require("../database/models/Topics");
-const db          = require("../utilities/DB_helpers.js")
+const db_util          = require("../utilities/DB_helpers.js");
 
 //Token and security
 const jwt         = require('jsonwebtoken');
@@ -41,10 +40,13 @@ router.post("/login", (req, res) => {
           const token = jwt.sign(payload, process.env.APP_SECRET_KEY);
           res.json({message: "Password OK.", token: token});
         } else {
-          res.status(401).json({message:"Passwords did not match."});
+          res.status(401).json({message: "Passwords did not match."});
         }
       })
-      .catch( err => console.log(err))
+      .catch( err => {
+        console.log(err);
+        res.status(401).json({message:"We could not find a user with that email. Please try again."})
+      })
   }
   if (!req.body.email || !req.body.password) {
     res.status(401).json({message:"Password or username not provided."});
@@ -54,6 +56,8 @@ router.post("/login", (req, res) => {
 // REGISTER ROUTE
 router.post("/register", (req, res) => {
   let hashPassword = bcrypt.hashSync(req.body.password, 10);
+
+
   const user = {
     first_name: req.body.firstname,
     last_name: req.body.lastname,
@@ -66,7 +70,7 @@ router.post("/register", (req, res) => {
         const payload = {id: response.id};
         const token = jwt.sign(payload, process.env.APP_SECRET_KEY);
         res.json({
-          message: "Register Success from server",
+          message: user.first_name +", thank you for joining!",
           token: token
         })
       })

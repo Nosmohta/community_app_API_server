@@ -27,13 +27,15 @@ router.post("/conversations/photo", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
   let photo_url = req.body.img
 
-  console.log("in post to photo", conv_id, user_id, photo_url);
+  console.log("in post to photo", "conv_id", conv_id, "user_id", user_id, "photo: ", photo_url);
 
   const conversationPromise = db_util.convInitOrFind(conv_id, user_id); //turn into promise structure
 
   conversationPromise
     .then((conversation) => {
       console.log(conversation)
+      console.log("in post to photo", "conv_id", conv_id, "user_id", user_id, "photo: ", photo_url);
+
       const nlpOptions = {
         method: 'POST',
         uri: 'https://vision.googleapis.com/v1/images:annotate?key=' + process.env.GOOGLE_API_KEY,
