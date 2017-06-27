@@ -58,8 +58,6 @@ router.post("/", (req, res) => {
 router.post( "/:topic_id/vote", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
   let vote_up = req.body.vote_up == 'true'
-  console.log( typeof vote_up, vote_up)
-
   if(user_id) {
     Users.findOne({'_id': user_id})
       .then( (user) => {
@@ -114,10 +112,13 @@ router.post( "/:topic_id/cancel", (req, res) => {
     Votes.findOneAndRemove({'topic_id': topic_id, 'user_id': user_id})
       .then((vote) => {
         //down increment the topics vote.
-        const vote_up = vote.vote_up
+        const up_vote = vote.up_vote
+
         Topics.findOne( {'_id': topic_id})
           .then( (topic) => {
-            let incrementProp = vote_up ? 'up_votes' : 'down_votes';
+            console.log( typeof up_vote, up_vote)
+            let incrementProp = (up_vote === true) ? 'up_votes' : 'down_votes';
+            console.log( "inc", incrementProp , "vote Up:", up_vote)
             topic.set( incrementProp, topic[incrementProp] -1 )
             topic.save()
               .then(res.json({
