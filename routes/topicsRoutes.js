@@ -30,11 +30,9 @@ router.post("/", (req, res) => {
             let data = [];
             topics.forEach((topic) => {
               const userData = {
-                'user_data': {
-                  'vote_pending': false,
-                  'vote_up':   db_util.userHistoryOnTopic(userVoteHistory, topic.id, true),
-                  'vote_down': db_util.userHistoryOnTopic(userVoteHistory, topic.id, false)
-                }
+                'vote_pending': false,
+                'vote_up':   db_util.userHistoryOnTopic(userVoteHistory, topic.id, true),
+                'vote_down': db_util.userHistoryOnTopic(userVoteHistory, topic.id, false)
               }
               data.push(Object.assign({}, topic.toJSON(), userData));
             })
@@ -68,7 +66,6 @@ router.post( "/:topic_id/vote", (req, res) => {
         Topics.findOne({'_id': req.params.topic_id})
           .then( (topic) => {
             let newVote = new Votes({
-              'vote_date': Date.now(),
               'user_id': user,
               'topic_id': topic,
               'up_vote': vote_up
@@ -82,7 +79,7 @@ router.post( "/:topic_id/vote", (req, res) => {
                     let topic_down_votes = topic.down_votes;
                     vote_up?
                       topic.set('up_votes', topic_up_votes + 1):
-                      topic.set('down_votes', topic_down_votes + 1 )
+                      topic.set('down_votes', topic_down_votes + 1 );
 
                     topic.save()
                       .then(
@@ -92,13 +89,9 @@ router.post( "/:topic_id/vote", (req, res) => {
                           vote_pending: false
                         })
                       )
-
                   })
-
               })
-
           })
-
       })
       .catch(err => {
         console.log(err);
@@ -108,6 +101,7 @@ router.post( "/:topic_id/vote", (req, res) => {
     res.status(401).json({message: 'No user was found, try logging in again to update your token.'});
   }
 });
+
 
 // POST Cancel VOTE ROUTE : deletes user previous vote on topic
 router.post( "/:topic_id/cancel", (req, res) => {
@@ -119,16 +113,30 @@ router.post( "/:topic_id/cancel", (req, res) => {
     console.log('user_id', user_id);
     Votes.findOneAndRemove({'topic_id': topic_id, 'user_id': user_id})
       .then((vote) => {
-        res.json({
-          message: 'Success deleting vote.',
-          vote_up: false,
-          vote_down: false,
-          vote_pending: false
-        })
+        //down increment the topics vote.
+        const vote_up = vote.vote_up
+        Topics.findOne( {'_id': topic_id})
+          .then( (topic) => {
+            let incrementProp = vote_up ? 'up_votes' : 'down_votes';
+            topic.set( incrementProp, topic[incrementProp] -1 )
+            topic.save()
+              .then(res.json({
+                message: 'Success deleting vote.',
+                vote_up: false,
+                vote_down: false,
+                vote_pending: false
+                })
+              )
+              .catch( err => {res.status(401).json({message: 'Failed to down increment topic vote total'})});
+          })
+          .catch(err => {
+            console.log(err);
+            res.status(401).json({message: 'Failed to find topic.'})
+          });
       })
       .catch(err => {
         console.log(err);
-        res.status(401).json({message: 'Failed to delete vote in database.'})
+        res.status(401).json({message: 'Failed to find and remove vote in database.'})
       });
   } else {
     res.status(401).json({message: 'Invalid token. Please login again.'})

@@ -16,7 +16,10 @@ const conversationSchema = mongoose.Schema({
     },
     description: String,
     nlp_data:{
-      labelAnnotations: String
+      entities: String,
+      documentSentiment: String,
+      sentences: String,
+      tokens: String,
     },
     subject: String,
     subject_guess_photo: String,

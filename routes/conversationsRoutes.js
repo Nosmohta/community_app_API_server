@@ -22,42 +22,73 @@ router.post("/", (req, res) => {
 });
 
 //POST conversation photo handled in uploadRoutes (this is to allow for alternate security system while using Form/Data)
-
+//?fields=entities
 //POST conversation DESCRIPTION
-router.post("/:conversation_id/description", (req, res) => {
-  // Create request object with "topic description"
+router.post("/description", (req, res) => {
+  let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
   const content = req.body.description;
-  console.log(content);
   const nlpOptions = {
     method: 'POST',
-    uri: 'https://language.googleapis.com/v1/documents:analyzeEntities?fields=entities&key=' + process.env.GOOGLE_API_KEY,
+    uri: 'https://language.googleapis.com/v1/documents:annotateText?fields=&key=' + process.env.GOOGLE_API_KEY,
     body:{
       document: {
         type: 'PLAIN_TEXT',
         language: 'EN',
         content: content
       },
+      "features": {
+        extractSyntax: true,
+        extractEntities: true,
+        extractDocumentSentiment: true
+      },
       encodingType: 'UTF8'
     },
     json: true
   };
-  console.log(nlpOptions);
-  // make api post to google NLP API
   rpn(nlpOptions)
-    .then( (data) => console.log("data from NLP", data))
-    .catch( (err) => console.log(err));
-  // create new topic for user
-  // save data to topic in DB
-  // respond with object All?
-  let test = {'subject_guess': ["pothole", "concrete"]};
-  res.json(test);
+    .then( (data) => {
+      let conv_id = req.body.conv_id;
+      console.log("data ", data);
+      if(!data.entities[0]) {
+        res.status(400).json({message: "Please provide a more complete description."})
+      } else {
+      const conversationPromise = db_util.convInitOrFind(conv_id, user_id);
+      conversationPromise
+        .then((conversation) => {
+          console.log(conversation.id);
+          conversation.set('description', content);
+          conversation.set('subject_guess_nlp', JSON.stringify(data.entities[0].name) );
+          conversation.set('nlp_data.documentSentiment',  JSON.stringify(data.documentSentiment));
+          conversation.set("nlp_data.entities", JSON.stringify(data.entities) );
+          conversation.set("nlp_data.sentences", JSON.stringify(data.documentSentiment) );
+          conversation.set("nlp_data.tokens", JSON.stringify(data.tokens) );
+          conversation.save()
+            .then(() => {
+              res.json({
+                "data": data,
+                'conv_id': conversation.id,
+                'subject_guess_description': data.entities[0].name ? data.entities[0].name : ''
+              });
+            })
+            .catch((err) => {
+              res.status(401).json({message: "Error saving conversation", error: err})
+            });
+        })
+        .catch((err) => {
+          res.status(401).json({message: "Error on init or finding the conversation", error: err})
+        });
+      }
+
+    })
+    .catch( (err) => { res.status(401).json({ message:"Error fetching from NLP", error: err});});
+
 });
 
 
 
 
 //POST conversation SUBJECT
-router.post("/:conversation_id/subject", (req, res) => {
+router.post("/subject", (req, res) => {
   const conv_id = req.params.conversation_id;
   const answer = req.body.answer
 
