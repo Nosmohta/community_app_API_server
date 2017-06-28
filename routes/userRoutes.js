@@ -15,7 +15,6 @@ const bcrypt = require("bcrypt");
 require('dotenv').config();
 
 
-
 //Get Photos Route
 router.get("/photos/:photo_id", (req, res) => {
   // don't trust req.params
@@ -56,8 +55,6 @@ router.post("/login", (req, res) => {
 // REGISTER ROUTE
 router.post("/register", (req, res) => {
   let hashPassword = bcrypt.hashSync(req.body.password, 10);
-
-
   const user = {
     first_name: req.body.firstname,
     last_name: req.body.lastname,

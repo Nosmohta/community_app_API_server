@@ -33,13 +33,13 @@ function nextQuestion(conversation, user_id) {
   return Users.findOne({'_id': user_id})
             .then((user) => {
               console.log("conversation id: ", conversation.id)
-              let questionHistory = conversation.questions
-              let question = {};
+              let questionHistory = conversation.questions ? conversation.questions : []
+                let question = {};
               console.log("Conversation Question History: ", questionHistory);
               //switch that calls specific generate question function
 
               switch (true) {
-                case ((user.communities.length > 0) && (conversationHistory.length > 0 )) :
+                case ((user.communities.length > 0) && (questionHistory.length < 0 )) :
                   console.log("communities taging question");
                   question = q.askForCommunityTags(user.communities);
                   break;
