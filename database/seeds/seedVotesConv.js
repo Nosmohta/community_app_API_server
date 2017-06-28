@@ -12,6 +12,8 @@ const voteSchema = require('../Schema/voteSchema');
 const conversationSchema = require('../Schema/conversationSchema');
 const bcrypt = require("bcrypt");
 
+const Users       = require("../models/Users");
+
 
 // connect to mlab database
 const dbuser = process.env.USERNAME;
@@ -28,61 +30,25 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
 
   // update these id strings if you have rebuilt the users and topics DB
-  let user_1_id = '594ff9b2e1e8b8f6f13a5cb7';
-  let user_2_id = '594ff9b2e1e8b8f6f13a5cb8';
-  let topic_2_id = '594ff9b1e1e8b8f6f13a5cb4';
-  let topic_4_id = '594ff9b1e1e8b8f6f13a5cb6';
+
+  Users.findOne({'email': 'andrew@email.com'})
+    .then( (andrew) => {
+      andrew.communities.push( 'City of Calgary', 'Parkdale', 'Lighthouse Labs')
+      andrew.save()
+    })
 
 
   // add votes and conversations using created users and topics
-  console.log("Set timer: will add votes and conversations in 2 seconds...")
+  console.log("Set timer: will add votes and conversations in 4 seconds...")
   setTimeout(function () {
     console.log("about to insert the votes and conversations");
 
-    //ADD VOTES
-    const Vote = mongoose.model('votes', voteSchema);
-    const vote_1 = new Vote({
-      user_id: user_1_id,
-      topic_id: topic_2_id,
-      up_vote: false
-    });
+    Users.findOne({'email': 'rich@email.com'})
+      .then( (rich) => {
+        rich.communities.push( 'City of Calgary', 'Kilarney', 'Lighthouse Labs')
+        rich.save()
+      })
 
-    const vote_2 = new Vote({
-      user_id: user_1_id,
-      topic_id: topic_4_id,
-      up_vote: true
-    });
-
-    const vote_3 = new Vote({
-      user_id: user_2_id,
-      topic_id: topic_4_id,
-      up_vote: false
-    });
-
-    const vote_4 = new Vote({
-      user_id: user_2_id,
-      topic_id: topic_2_id,
-      up_vote: true
-    });
-
-    const voteList = [ vote_1, vote_2, vote_3, vote_4];
-    Vote.insertMany(voteList);
-
-
-    //ADD COVERSATIONS
-    // const Vote = mongoose.model('votes', voteSchema);
-    // const vote_1 = new Vote({
-    //   first_name: "andrew",
-    //   last_name: "thomson",
-    //   email: "andrew@email.com",
-    //   password: bcrypt.hashSync('1234', 10),
-    //   vote_history:[ ]
-    // });
-    //
-    // const voteList = [vote_1, vote_2]
-    // User.insertMany(voteList);
-
-
-  }, 2000);
+  }, 4000);
 
 })

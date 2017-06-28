@@ -23,7 +23,8 @@ const conversationSchema = mongoose.Schema({
     },
     subject: String,
     subject_guess_photo: String,
-    subject_guess_nlp: String
+    subject_guess_nlp: String,
+    questions:[]
   },
   {
     timestamps: {

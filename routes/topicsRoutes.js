@@ -25,7 +25,7 @@ router.post("/", (req, res) => {
     .then( (user) => {
       if(user) {
         const userVoteHistory = user.vote_history;
-        Topics.find()
+        Topics.find().sort('-created_at')
           .then((topics) => {
             let data = [];
             topics.forEach((topic) => {
@@ -107,18 +107,13 @@ router.post( "/:topic_id/cancel", (req, res) => {
   let topic_id = req.params.topic_id;
 
   if (user_id) {
-    console.log('topic_id', topic_id);
-    console.log('user_id', user_id);
     Votes.findOneAndRemove({'topic_id': topic_id, 'user_id': user_id})
       .then((vote) => {
         //down increment the topics vote.
-        const up_vote = vote.up_vote
-
+        const up_vote = vote.up_vote;
         Topics.findOne( {'_id': topic_id})
           .then( (topic) => {
-            console.log( typeof up_vote, up_vote)
             let incrementProp = (up_vote === true) ? 'up_votes' : 'down_votes';
-            console.log( "inc", incrementProp , "vote Up:", up_vote)
             topic.set( incrementProp, topic[incrementProp] -1 )
             topic.save()
               .then(res.json({

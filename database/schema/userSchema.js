@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema({
   email: { type: String, index: true, unique: true, required: true },
   password: { type: String, required: true },
   vote_history:[{ type: mongoose.Schema.Types.ObjectId, ref: 'votes' }],
-  communities:[communitySchema],
+  communities:[],
   conversation_history:[conversationSchema]
   },
   {

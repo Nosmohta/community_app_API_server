@@ -18,9 +18,6 @@ const db_util     = require("../utilities/DB_helpers.js");
 require('dotenv').config();
 
 
-
-
-
 //POST conversation photo
 router.post("/conversations/photo", (req, res) => {
   let conv_id = req.body.conv_id;

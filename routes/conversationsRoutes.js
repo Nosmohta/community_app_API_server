@@ -12,7 +12,8 @@ require('dotenv').config();
 //Bring needed models into scope.
 const Users       = require("../database/models/Users");
 const Topics      = require("../database/models/Topics");
-const db_util          = require("../utilities/DB_helpers.js")
+const Conversations    = require("../database/models/Conversations");
+const db_util          = require("../utilities/DB_helpers.js");
 
 
 //POST conversation root
@@ -21,8 +22,7 @@ router.post("/", (req, res) => {
   res.json(data);
 });
 
-//POST conversation photo handled in uploadRoutes (this is to allow for alternate security system while using Form/Data)
-//?fields=entities
+
 //POST conversation DESCRIPTION
 router.post("/description", (req, res) => {
   let user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
@@ -48,14 +48,12 @@ router.post("/description", (req, res) => {
   rpn(nlpOptions)
     .then( (data) => {
       let conv_id = req.body.conv_id;
-      console.log("data ", data);
       if(!data.entities[0]) {
         res.status(400).json({message: "Please provide a more complete description."})
       } else {
       const conversationPromise = db_util.convInitOrFind(conv_id, user_id);
       conversationPromise
         .then((conversation) => {
-          console.log(conversation.id);
           conversation.set('description', content);
           conversation.set('subject_guess_nlp', JSON.stringify(data.entities[0].name) );
           conversation.set('nlp_data.documentSentiment',  JSON.stringify(data.documentSentiment));
@@ -85,43 +83,110 @@ router.post("/description", (req, res) => {
 });
 
 
-
-
 //POST conversation SUBJECT
 router.post("/subject", (req, res) => {
-  const conv_id = req.params.conversation_id;
-  const answer = req.body.answer
+  const user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
+  const conv_id = req.body.conv_id;
+  const subject = req.body.subject;
 
+  // call nextQuestion(conversation) return next question object
+  // push into conversation questions[]
+  // respond with next question object
 
-  let test = {
-    question:{
-      type: 'END',
-      paylad: 'Thank you for contributing to your community!'
-    },
-    new_topic: {
-      subject: 'streetscape',
-      img_path: 'http://localhost:8080/photos/topic_5',
-      description: 'I really like this street design!',
-      up_votes: 0,
-      down_votes: 0,
-      date_created: Date.now()
-    }
-  };
-  res.json(test);
-});
+  Conversations.findOne( {'_id': conv_id})
+    .then((conversation) => {
+      const topic = new Topics({
+        subject: subject,
+        img_path: conversation.photo,
+        up_votes: 0,
+        down_votes: 0,
+        description: conversation.description,
+        nlp_data:{
+          entities: conversation.nlp_data.entities,
+          documentSentiment: conversation.nlp_data.documentSentiment,
+          sentences: conversation.nlp_data.sentences,
+          tokens: conversation.nlp_data.tokens,
+        },
+        vision_data:{
+          labelAnnotations: conversation.vision_data.labelAnnotations,
+          faceAnnotations: conversation.vision_data.faceAnnotations,
+          safeSearchAnnotation: conversation.vision_data.safeSearchAnnotation,
+          webDetection: conversation.vision_data.webDetection,
+          fullTextAnnotation: conversation.vision_data.fullTextAnnotation,
+        }
+      })
+      topic.save()
+        .then( (topic) => {
+          conversation.set( 'topic_id', topic.id)
+          conversation.save()
+            .then( () => {
+              const questionPromise = db_util.nextQuestion(conversation, user_id);
+              questionPromise
+                .then( (question) => {
+                  conversation.questions.push(question);
+                  res.json({
+                    question: question,
+                    newTopic: "Insert new topic?"
+                  });
+                })
+                .catch((err) => {
+                  console.log(err)
+                  res.status(400).json({'message': "Error generating next question."})
+                })
+            })
+            .catch((err) => {
+              console.log(err)
+              res.status(400).json({'message': "Error saving conversation in database."})
+            })
+        })
+        .catch(() => {
+          res.status(400).json({'message': "Error saving topic in database."})
+        })
+    })
+    .catch(() => {
+      res.status(400).json({message: "Error finding conversation in database."})
+    })
+})
+
 
 
 //POST conversation ANSWER
-router.post("/:conversation_id/answer", (req, res) => {
-  const conv_id = req.params.conversation_id;
+router.post("/answer", (req, res) => {
 
-  let test = {
-    question:{
-      type: 'END',
-      paylad: 'Thank you for contributing to your community!'
-    }
-  };
-  res.json(test);
+  const user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
+  const conv_id = req.params.conv_id;
+  const answer = req.body.answer ? req.body.answer : '';
+  Conversations.findOne( {'_id': conv_id})
+    .then( (conversation) => {
+        // Handle answer
+        if(answer.type == 'community_tags'){
+          Topics.findOne({'_id': conversation.topic_id})
+            .then( (topic) => {
+              topic.set('community_tags', answer)
+            })
+        }
+        // call nextQuestion
+        const questionPromise = db_util.nextQuestion(conversation, user_id);
+        questionPromise
+          .then( (question) => {
+            conversation.questions.push(question);
+            res.json({
+              question: question
+            });
+
+          })
+          .catch(() => {
+            res.status(400).json({message: "Error generating next question."})
+          })
+
+    })
+    .catch(() => {
+      res.status(400).json({message: "Error finding conversation in database."})
+    })
+
+
+
+  res.json({message: "route needs to me build"});
 });
 
 module.exports = router;
