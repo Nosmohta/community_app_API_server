@@ -21,7 +21,6 @@ router.get("/photos/:photo_id", (req, res) => {
   // read topic_5.jpg from uploads file
   let img_name = req.params.photo_id;
   let photo = __dirname + '/../uploads/' + img_name;
-  console.log(photo.filename);
   res.download(photo);
 });
 

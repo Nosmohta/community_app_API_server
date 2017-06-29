@@ -32,20 +32,15 @@ function nextQuestion(conversation, user_id) {
 
   return Users.findOne({'_id': user_id})
             .then((user) => {
-              console.log("conversation id: ", conversation.id)
               let questionHistory = conversation.questions ? conversation.questions : []
-                let question = {};
-              console.log("Conversation Question History: ", questionHistory);
+              let question = {};
               //switch that calls specific generate question function
-
               switch (true) {
-                case ((user.communities.length > 0) && (questionHistory.length < 0 )) :
-                  console.log("communities taging question");
+                case ((user.communities.length > 0) && (questionHistory.length == 0 )) :
                   question = q.askForCommunityTags(user.communities);
                   break;
 
                 default:
-                  console.log("made it to default end question");
                   question = {
                     type: 'END',
                     payload: { text: 'Thank you for contributing to your community!'}

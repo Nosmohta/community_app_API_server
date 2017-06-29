@@ -152,41 +152,57 @@ router.post("/subject", (req, res) => {
 
 //POST conversation ANSWER
 router.post("/answer", (req, res) => {
-
   const user_id = jwt.verify(req.body.token, process.env.APP_SECRET_KEY).id;
-  const conv_id = req.params.conv_id;
+  const conv_id = req.body.conv_id;
   const answer = req.body.answer ? req.body.answer : '';
+
+  console.log(conv_id, answer, user_id)
   Conversations.findOne( {'_id': conv_id})
     .then( (conversation) => {
-        // Handle answer
-        if(answer.type == 'community_tags'){
-          Topics.findOne({'_id': conversation.topic_id})
-            .then( (topic) => {
-              topic.set('community_tags', answer)
-            })
-        }
-        // call nextQuestion
-        const questionPromise = db_util.nextQuestion(conversation, user_id);
-        questionPromise
-          .then( (question) => {
-            conversation.questions.push(question);
-            res.json({
-              question: question
-            });
+        if( req.body.answer_type == 'COMMUNITY_TAG'){
+          conversation.questions.push( req.body.answer_type )
+          conversation.save()
+            .then( () => {
+              Topics.findOne({'_id': conversation.topic_id})
+                .then( (topic) => {
+                  topic.community_tags.push(answer)
+                  topic.save()
+                    .then(() => {
+                      const questionPromise = db_util.nextQuestion(conversation, user_id);
+                      questionPromise
+                        .then((question) => {
+                          conversation.questions.push(question);
+                          res.json({
+                            question: question
+                          });
+                        })
+                        .catch(() => {
+                          res.status(400).json({message: "Error generating next question."})
+                        })
 
-          })
-          .catch(() => {
-            res.status(400).json({message: "Error generating next question."})
-          })
+                    })
+                    .catch(() => {
+                      res.status(400).json({message: "Error setting tags."})
+                    })
+
+                })
+                .catch(() => {
+                  res.status(400).json({message: "Error finding topic."})
+                })
+            })
+            .catch(() => {
+            res.status(400).json({message: "Error saving conversation."})
+             })
+
+        } else {
+          res.status(400).json({message: "Need to build logic to handle non-'community_tags' answers."})
+        }
 
     })
     .catch(() => {
       res.status(400).json({message: "Error finding conversation in database."})
     })
 
-
-
-  res.json({message: "route needs to me build"});
 });
 
 module.exports = router;
