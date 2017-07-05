@@ -14,6 +14,10 @@ const jwt         = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
 require('dotenv').config();
 
+//Get root test
+router.get("/", (req, res) => {
+  res.send("api working");
+});
 
 //Get Photos Route
 router.get("/photos/:photo_id", (req, res) => {
