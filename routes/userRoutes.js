@@ -15,6 +15,12 @@ const bcrypt = require("bcrypt");
 require('dotenv').config();
 
 
+//Get api test route
+router.get("/", (req, res) => {
+  res.send("success reaching api server");
+});
+
+
 //Get Photos Route
 router.get("/photos/:photo_id", (req, res) => {
   // don't trust req.params
