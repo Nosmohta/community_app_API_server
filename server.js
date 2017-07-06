@@ -18,9 +18,10 @@ const Users       = require("./database/models/Users");
 const app         = express();
 
 //MongoDB connection and configuration
-const dbuser = process.env.USERNAME;
-const dbpass = process.env.PASSWORD;
-const uri = "mongodb://" + dbuser + ":" + dbpass + "@ds131312.mlab.com:31312/communityapp2017";
+//const dbuser = process.env.USERNAME;
+//const dbpass = process.env.PASSWORD;
+//const uri = "mongodb://" + dbuser + ":" + dbpass + "@ds131312.mlab.com:31312/communityapp2017";
+const uri = process.env.MONGODB_URI
 mongoose.Promise = global.Promise;
 const options = {server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
                 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
