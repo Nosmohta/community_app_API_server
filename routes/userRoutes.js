@@ -2,7 +2,7 @@
 
 const express     = require('express');
 const router      = express.Router();
-const session     = require('express-session');
+//const session     = require('express-session');
 const request     = require('request');
 
 //Bring needed models into scope.

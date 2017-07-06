@@ -2,7 +2,7 @@
 
 const express     = require('express');
 const router      = express.Router();
-const session     = require('express-session');
+//const session     = require('express-session');
 const request     = require('request');
 const rpn         = require('request-promise-native');
 const jwt         = require('jsonwebtoken');
