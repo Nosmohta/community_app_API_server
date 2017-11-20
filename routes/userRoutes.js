@@ -17,7 +17,7 @@ require('dotenv').config();
 
 //Get api test route
 router.get("/", (req, res) => {
-  res.send("success reaching api server");
+  res.send("success reaching api server!");
 });
 
 
